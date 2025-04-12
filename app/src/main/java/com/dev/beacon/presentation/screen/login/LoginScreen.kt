@@ -62,7 +62,7 @@ fun LoginScreen(navController: NavHostController = rememberNavController()) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(128.dp) // Slightly larger than image size to accommodate stroke
+                .size(128.dp)
                 .background(Color.White, shape = CircleShape) // Background color
                 .border(2.dp, Color.White, shape = CircleShape) // Stroke color and width
         ) {
@@ -88,12 +88,12 @@ fun LoginScreen(navController: NavHostController = rememberNavController()) {
         Button(
             onClick = {
                 isLoading = true
-//                navController.navigate("home") {
-//                    popUpTo("login") { inclusive = true }
-//                }
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
             },
-            shape = CircleShape, // Makes the button circular
-            modifier = Modifier.size(56.dp), // Adjust size as needed
+            shape = CircleShape,
+            modifier = Modifier.size(56.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
             if (isLoading) {
