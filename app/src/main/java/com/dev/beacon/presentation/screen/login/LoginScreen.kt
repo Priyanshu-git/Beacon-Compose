@@ -27,17 +27,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dev.beacon.R
 import com.dev.beacon.ui.components.EmailInputField
 import com.dev.beacon.ui.components.LoadingIconButton
+import com.dev.beacon.ui.viewmodel.AuthViewModel
 import com.dev.beacon.utils.LoginUtils
 
 @Composable
 @Preview
 fun LoginScreen(navController: NavHostController = rememberNavController()) {
     var isLoading by remember { mutableStateOf(false) }
+    val parentEntry = remember(navController) {
+        navController.getBackStackEntry("auth")
+    }
+    val authViewModel: AuthViewModel = hiltViewModel(parentEntry)
+
 
     Surface {
         Column(
@@ -95,6 +102,7 @@ fun LoginScreen(navController: NavHostController = rememberNavController()) {
                     if (errorState == null) {
                         isLoading = true
                         navController.navigate("otp") {
+                            authViewModel.setEmail(email)
                             popUpTo("login") { inclusive = true }
                         }
                     }

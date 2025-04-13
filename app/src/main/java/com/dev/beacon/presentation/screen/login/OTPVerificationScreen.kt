@@ -2,6 +2,7 @@ package com.dev.beacon.presentation.screen.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,15 +33,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dev.beacon.common.AppConstants
 import com.dev.beacon.ui.components.LoadingIconButton
+import com.dev.beacon.ui.viewmodel.AuthViewModel
 
 @Composable
 @Preview
 fun OTPVerificationScreen(navController: NavController = rememberNavController()) {
     var otp by remember { mutableStateOf("") }
+    val parentEntry = remember(navController) {
+        navController.getBackStackEntry("auth")
+    }
+    val authViewModel: AuthViewModel = hiltViewModel(parentEntry)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -53,6 +61,34 @@ fun OTPVerificationScreen(navController: NavController = rememberNavController()
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Verify OTP", style = MaterialTheme.typography.headlineMedium)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            val email by authViewModel.email.collectAsState()
+
+            Text(
+                "We have sent a 4-digit code to",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = email,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Not you?",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable(
+                    true,
+                    onClick = {
+                        navController.navigate("login") {
+                            authViewModel.setEmail("")
+                            popUpTo("otp") { inclusive = true }
+                        }
+                    })
+            )
+
 
             Spacer(modifier = Modifier.height(24.dp))
 
