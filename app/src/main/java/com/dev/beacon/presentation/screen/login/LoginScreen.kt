@@ -2,23 +2,18 @@ package com.dev.beacon.presentation.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,78 +31,78 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dev.beacon.R
 import com.dev.beacon.ui.components.EmailInputField
+import com.dev.beacon.ui.components.LoadingIconButton
+import com.dev.beacon.utils.LoginUtils
 
 @Composable
 @Preview
 fun LoginScreen(navController: NavHostController = rememberNavController()) {
     var isLoading by remember { mutableStateOf(false) }
-    
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
 
-        Text(
-            text = "Login/Signup",
-            fontSize = 24.sp,
-            color = Color.White,
-            modifier = Modifier.padding(8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
-            contentAlignment = Alignment.Center,
+    Surface {
+        Column(
             modifier = Modifier
-                .size(128.dp)
-                .background(Color.White, shape = CircleShape) // Background color
-                .border(2.dp, Color.White, shape = CircleShape) // Stroke color and width
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.lighthouse),
-                contentDescription = "Navigate",
-                modifier = Modifier.fillMaxSize()
+
+            Text(
+                text = "Login/Signup",
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(8.dp)
             )
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        var email by remember { mutableStateOf("") }
-        Column(modifier = Modifier.padding(16.dp)) {
-            EmailInputField(
-                email = email,
-                onEmailChange = { email = it }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                isLoading = true
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
-            },
-            shape = CircleShape,
-            modifier = Modifier.size(56.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "Navigate",
-                    modifier = Modifier.fillMaxSize()
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(148.dp)
+                    .background(Color.Transparent)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.lighthouse),
+                    contentDescription = "Lighthouse",
+                    modifier = Modifier
+                        .fillMaxSize()
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            var email by remember { mutableStateOf("") }
+            var errorState: String? by remember { mutableStateOf(null) }
+            Column(modifier = Modifier.padding(24.dp)) {
+                EmailInputField(
+                    email = email,
+                    onEmailChange = {
+                        email = it
+                        errorState = null
+                    },
+                    errorMessage = errorState
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            LoadingIconButton(
+                isLoading = isLoading,
+                onClick = {
+                    errorState = LoginUtils.getInvalidEmailMessage(email)
+                    if (errorState == null) {
+                        isLoading = true
+                        navController.navigate("otp") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                },
+                icon = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = "Continue"
+            )
         }
     }
+
 }

@@ -1,6 +1,5 @@
 package com.dev.beacon.ui.components
 
-import android.util.Patterns
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,9 +17,10 @@ fun EmailInputField(
     email: String,
     onEmailChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = "Email"
+    label: String = "Email",
+    errorMessage: String? = null
 ) {
-    val isError = email.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    val isError = errorMessage!= null && errorMessage.isNotEmpty()
 
     OutlinedTextField(
         value = email,
@@ -37,7 +37,7 @@ fun EmailInputField(
 
     if (isError) {
         Text(
-            text = "Invalid email address",
+            text = errorMessage,
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 16.dp, top = 4.dp)

@@ -6,12 +6,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.dev.beacon.presentation.screen.home.HomeScreen
 import com.dev.beacon.presentation.screen.login.LoginScreen
-import com.dev.beacon.presentation.screen.signup.SignupScreen
+import com.dev.beacon.presentation.screen.login.OTPVerificationScreen
 
 fun NavGraphBuilder.authGraph(navController: NavHostController) {
     navigation(startDestination = "login", route = "auth") {
         composable("login") { LoginScreen(navController) }
-        composable("signup") { SignupScreen(navController) }
+        composable("otp") { OTPVerificationScreen(navController) }
     }
 }
 
