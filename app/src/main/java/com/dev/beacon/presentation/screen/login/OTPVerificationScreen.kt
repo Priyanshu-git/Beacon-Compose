@@ -13,11 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,88 +57,107 @@ fun OTPVerificationScreen(navController: NavController = rememberNavController()
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Verify OTP", style = MaterialTheme.typography.headlineMedium)
+        Box(modifier = Modifier.fillMaxSize()) {
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // Main content
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(horizontal = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Verify OTP", style = MaterialTheme.typography.headlineMedium)
 
-            val email by authViewModel.email.collectAsState()
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                "We have sent a 4-digit code to",
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                text = email,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Not you?",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable(
-                    true,
-                    onClick = {
+                val email by authViewModel.email.collectAsState()
+
+                Text("We have sent a 4-digit code to", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = email,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Not you?",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        authViewModel.setEmail("")
                         navController.navigate("login") {
-                            authViewModel.setEmail("")
                             popUpTo("otp") { inclusive = true }
                         }
-                    })
-            )
+                    }
+                )
 
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    "Enter the ${AppConstants.OTP_LENGTH}-digit code sent to your email.",
+                    style = MaterialTheme.typography.bodyLarge
+                )
 
-            Text("Enter the ${AppConstants.OTP_LENGTH}-digit code sent to your email.", style = MaterialTheme.typography.bodyLarge)
+                Row {
+                    Text("Didn't receive code?", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        " Resend",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-            Row {
-                Text("Didn't receive code?", style = MaterialTheme.typography.bodyLarge)
-                Text(" Resend", style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(24.dp))
+
+                var errorState by remember { mutableStateOf(false) }
+                OtpTextField(
+                    otp = otp,
+                    onOtpChange = {
+                        if (it.length <= AppConstants.OTP_LENGTH) {
+                            otp = it
+                            errorState = false
+                        }
+                    },
+                    errorState = errorState
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                var isLoading by remember { mutableStateOf(false) }
+                LoadingIconButton(
+                    isLoading = isLoading,
+                    onClick = {
+                        if (otp.length == AppConstants.OTP_LENGTH) {
+                            isLoading = true
+                            navController.navigate("home") {
+                                popUpTo("otp") { inclusive = true }
+                            }
+                        } else {
+                            errorState = true
+                        }
+                    },
+                    icon = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Continue"
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            var errorState by remember { mutableStateOf(false) }
-            OtpTextField(
-                otp = otp,
-                onOtpChange = { if (it.length <= AppConstants.OTP_LENGTH) {
-                    otp = it
-                    errorState = false
-                } },
-                errorState = errorState
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            var isLoading by remember { mutableStateOf(false) }
-            LoadingIconButton(
-                isLoading = isLoading,
-                onClick = {
-                    if (otp.length == AppConstants.OTP_LENGTH) {
-                        isLoading = true
-                        navController.navigate("home") {
-                            popUpTo("otp") { inclusive = true }
-                        }
-                    } else {
-                        errorState = true
-                    }
-                },
-                icon = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Continue"
-            )
-
+            Button(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Back")
+            }
         }
     }
 }
+
 
 @Composable
 fun OtpTextField(
