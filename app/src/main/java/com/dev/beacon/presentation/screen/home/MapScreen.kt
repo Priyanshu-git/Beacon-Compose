@@ -6,8 +6,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dev.beacon.R
 import com.dev.beacon.ui.viewmodel.AppViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -39,7 +41,8 @@ fun MapScreen(viewModel: AppViewModel = hiltViewModel()) {
         Marker(
             state = markerState,
             title = "Current Location",
-            snippet = "Lat: ${location.latitude}, Lng: ${location.longitude}"
+            snippet = "Lat: ${location.latitude}, Lng: ${location.longitude}",
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.green_dot_16)
         )
     }
 }
