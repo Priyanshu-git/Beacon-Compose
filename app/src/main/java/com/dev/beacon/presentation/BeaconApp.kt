@@ -24,6 +24,6 @@ fun BeaconApp() {
 }
 
 fun isUserLoggedIn(): Boolean {
-    return false
+    return true
 }
 
