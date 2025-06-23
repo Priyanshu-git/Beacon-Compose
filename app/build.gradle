@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.google.maps)
+    implementation(libs.google.location)
     implementation(libs.google.maps.compose)
 
 }
